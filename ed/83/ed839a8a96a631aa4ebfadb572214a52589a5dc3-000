@@ -1,0 +1,38 @@
+# Continuer de Push UIDisplay
+
+1. Reproduire les composants pixel-accurate basés sur ce que je vois en REACT TSX
+
+then take screens
+
+I think you should finish the feature you're working on more focus on scrapping ref for 64 games taking all game ref UI for every part of the game and start with 4 games the witcher 3 Persona 5 DEATH STRANDING AND GHOST OF TSUSHIMA (every playstation studio games) gather all game components : bar ui, I think and reproduce games elements in react tsx components ... and continue the loop go to database game ui and keep screens to the folder projects...
+
+va sur ce site et prends des screens des jeux j'ai l'impression que tu n'ajoutes pas vraiment des UI components qui respectent pixel par pixel ! [https://www.gameuidatabase.com/](https://www.gameuidatabase.com/)
+
+va sur ce site et prends des screens des jeux j'ai l'impression que tu n'ajoutes pas vraiment des UI components qui respectent pixel par pixel ! [**https://www.gameuidatabase.com/**](https://www.gameuidatabase.com/)__ __start with 4 games the witcher 3 Persona 5 DEATH STRANDING AND GHOST OF TSUSHIMA (every playstation studio games) gather all game components : bar ui, I think and reproduce games elements in react tsx components ... and continue the loop go to database game ui and keep screens to the folder projects... make pixel perfect components
+
+Attempted to access Chrome browser context; connection failed
+
+Attempted to access Chrome browser context; connection failed
+
+Le plugin Chrome n'est pas connecté. La fenêtre de reconnexion s'est affichée. Une fois reconnecté, dis-moi et je vais directement sur gameuidatabase.com pour prendre des screens des UIs de Witcher 3, Persona 5, Death Stranding et Ghost of Tsushima.
+
+En attendant, j'ai appliqué toutes les corrections importantes que j'avais trouvées dans le code et quelque chose d'important à noter sur ce que tu soulèves :
+
+**Le problème réel** : mes composants React actuels (`HealthBarContent`, `DialogBoxContent`, etc.) sont *génériques* — ils appliquent juste les couleurs du preset, mais ne reproduisent pas les formes, les bordures, les angles et les ornements spécifiques de chaque jeu.
+
+Par exemple :
+
+- **Persona 5** : les barres HP sont des *parallélogrammes obliques inclinés* — pas des rectangles
+- **Ghost of Tsushima** : pas de minimap — navigation par vent diegétique ; barres visibles seulement en combat
+- **Sekiro** : la barre de posture ennemie est en HAUT de l'écran, pas en bas
+- **Elden Ring** : 3 barres empilées (rouge/bleu/vert) en haut à gauche, sans décoration
+
+Dès que Chrome est reconnecté, je vais :
+
+1. Naviguer sur gameuidatabase.com pour chaque jeu
+2. Prendre des screenshots et les sauvegarder dans le dossier projet
+3. Reproduire les composants pixel-accurate basés sur ce que je vois
+
+Reconnecte Chrome et je commence.
+
+You've hit your limit · resets 4am (Europe/Paris)
