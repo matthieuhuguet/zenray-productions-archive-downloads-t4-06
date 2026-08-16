@@ -1,0 +1,1 @@
+# Le parent constraint c’est bien s’il y a plusieurs parent pour manipuler le child, mais ce n’est pas utile si il n’y a qu’un seul parent il vaut mieux utiliser set transform
