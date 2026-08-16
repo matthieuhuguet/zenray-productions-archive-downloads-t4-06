@@ -1,0 +1,7 @@
+﻿Name
+Parent Constraint do both at once. Mais on perd le Offset du rotation.
+At node & Position Constraint
+Weight Influence if Two Parents and Draw Debug Fonction
+"Même logique pour les Rotation Constraint si il y a plusieurs parents, dans ce cas, la rotation ne s’effectue qu’à 50% sauf si on change l’influence des poids (Weight)"
+Aim Constraint
+bool MaintainOffset = false; the Child go to the middle because of the weight
