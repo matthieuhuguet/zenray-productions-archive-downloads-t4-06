@@ -1,0 +1,16 @@
+# VCPKG C/C++ Qt
+
+Created: January 12, 2025 2:50 PM
+Update: January 12, 2025 8:50 PM
+
+### **Résumé des Apprentissages**
+
+Nous avons exploré des outils essentiels pour le développement logiciel. **pip** est parfait pour les scripts Python rapides avec des bibliothèques comme OpenCV et Pillow, tandis que **vcpkg** gère efficacement les dépendances C++ complexes telles qu’OpenCV ou libjpeg-turbo. Utilisez des gestionnaires adaptés à votre langage et à vos objectifs pour simplifier vos projets, et privilégiez des outils populaires et bien documentés.
+
+Pour des applications simples, commencez avec **Qt Creator** pour sa facilité d'intégration avec Qt, ou avec Python pour un prototypage rapide. Les outils avancés comme Visual Studio ou le multi-threading GPU sont utiles pour des projets complexes, mais les débutants devraient se concentrer sur des solutions légères et progressives. Favorisez une approche minimaliste en suivant la logique de Pareto : 80 % des résultats avec 20 % d'efforts.
+
+Progresser implique de maîtriser davantage de bibliothèques, comme **PyQt** ou **CMake**, et de travailler sur des projets concrets (capture d’écran, outils graphiques). Avec des outils comme Qt et OpenCV, vous pouvez créer des applications performantes en restant simple et optimisé. Objectif : tester vos idées sur des petits projets et évoluer graduellement vers des applications complexes.
+
+.cuda
+
+.multithreading
