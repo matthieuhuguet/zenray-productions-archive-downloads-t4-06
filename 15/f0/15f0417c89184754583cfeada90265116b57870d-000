@@ -1,0 +1,604 @@
+# Finir d’upate et compiler PushVault2
+
+Update the main content area background:
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\App.tsx)
+⎿  Added 1 line, removed 1 line
+197              flex: 1,
+198              overflow: "auto",
+199              padding: "24px",
+200 -            background: "#121212",
+200 +            background: "var(--color-bg-primary)",
+201            }}
+202          >
+203            {activeTab === "dashboard" && <Dashboard />}
+
+● Also update the history tab placeholder colors to use CSS variables:
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\App.tsx)
+⎿  Added 1 line, removed 1 line
+211                  height: "100%",
+212                  flexDirection: "column",
+213                  gap: "16px",
+214 -                color: "#535353",
+214 +                color: "var(--color-text-disabled)",
+215                }}
+216              >
+217                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.3 }}>
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\App.tsx)
+⎿  Added 1 line, removed 1 line
+218                  <circle cx="12" cy="12" r="9" stroke="#b3b3b3" strokeWidth="2" />
+219                  <polyline points="12 7 12 12 15 15" stroke="#b3b3b3" strokeWidth="2" strokeLinecap="ro
+und" strokeLinejoin="round" />
+220                </svg>
+221 -              <p style={{ fontSize: "15px", fontWeight: 600, color: "#fff" }}>
+221 +              <p style={{ fontSize: "15px", fontWeight: 600, color: "var(--color-text-primary)" }}>
+222                  Global History
+223                </p>
+224                <p style={{ fontSize: "13px" }}>
+
+● Now let me update the key components that define the major visual surfaces. Let me update the Sidebar, Header, and
+BottomBar to use CSS variables for their backgrounds.
+
+● Read 3 files (ctrl+o to expand)
+
+● Now updating the three structural components to use CSS variables for theme support.
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\Sidebar\Sidebar.tsx)
+⎿  Added 1 line, removed 1 line
+186        style={{
+187          width: "64px",
+188          height: "100vh",
+189 -        background: "#000000",
+189 +        background: "var(--color-bg-base)",
+190          display: "flex",
+191          flexDirection: "column",
+192          alignItems: "center",
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\Sidebar\Sidebar.tsx)
+⎿  Added 1 line, removed 1 line
+193          paddingTop: "8px",
+194          paddingBottom: "8px",
+195          flexShrink: 0,
+196 -        borderRight: "1px solid rgba(255,255,255,0.06)",
+196 +        borderRight: "1px solid var(--color-border-subtle)",
+197          zIndex: 10,
+198        }}
+199      >
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\Sidebar\Sidebar.tsx)
+⎿  Added 1 line, removed 1 line
+230          style={{
+231            width: "32px",
+232            height: "1px",
+233 -          background: "rgba(255,255,255,0.08)",
+233 +          background: "var(--color-border)",
+234            marginBottom: "8px",
+235            flexShrink: 0,
+236          }}
+
+● Now update Header:
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\Header\Header.tsx)
+⎿  Added 2 lines, removed 2 lines
+67      <header
+68        style={{
+69          height: "80px",
+70 -        background: "#121212",
+71 -        borderBottom: "1px solid rgba(255,255,255,0.06)",
+70 +        background: "var(--color-bg-primary)",
+71 +        borderBottom: "1px solid var(--color-border-subtle)",
+72          display: "flex",
+73          alignItems: "center",
+74          paddingLeft: "28px",
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\Header\Header.tsx)
+⎿  Error editing file
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\Header\Header.tsx)
+⎿  Added 1 line, removed 1 line
+85            style={{
+86              fontSize: "22px",
+87              fontWeight: 700,
+88 -            color: "#fff",
+88 +            color: "var(--color-text-primary)",
+89              lineHeight: 1.2,
+90              letterSpacing: "-0.3px",
+91            }}
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\Header\Header.tsx)
+⎿  Error editing file
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\Header\Header.tsx)
+⎿  Added 1 line, removed 1 line
+112            display: "flex",
+113            alignItems: "center",
+114            gap: "10px",
+115 -          background: inputFocused ? "#2a2a2a" : "#1a1a1a",
+115 +          background: inputFocused ? "var(--color-bg-hover)" : "var(--color-bg-elevated)",
+116            border: `1px solid ${inputFocused ? "#1DB954" : "rgba(255,255,255,0.1)"}`,
+117            borderRadius: "24px",
+118            padding: "8px 16px",
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\Header\Header.tsx)
+⎿  Added 1 line, removed 1 line
+113            alignItems: "center",
+114            gap: "10px",
+115            background: inputFocused ? "var(--color-bg-hover)" : "var(--color-bg-elevated)",
+116 -          border: `1px solid ${inputFocused ? "#1DB954" : "rgba(255,255,255,0.1)"}`,
+116 +          border: `1px solid ${inputFocused ? "var(--color-accent)" : "var(--color-border)"}`,
+117            borderRadius: "24px",
+118            padding: "8px 16px",
+119            width: "280px",
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\Header\Header.tsx)
+⎿  Added 1 line, removed 1 line
+136              background: "none",
+137              border: "none",
+138              outline: "none",
+139 -            color: "#fff",
+139 +            color: "var(--color-text-primary)",
+140              fontSize: "13px",
+141              padding: 0,
+142              minWidth: 0,
+
+● Now update BottomBar:
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\BottomBar\BottomBar.tsx)
+⎿  Added 2 lines, removed 2 lines
+245      <div
+246        style={{
+247          height: "64px",
+248 -        background: "#000000",
+249 -        borderTop: "1px solid rgba(255,255,255,0.08)",
+248 +        background: "var(--color-bg-base)",
+249 +        borderTop: "1px solid var(--color-border)",
+250          display: "flex",
+251          alignItems: "center",
+252          paddingLeft: "24px",
+
+● Fix 2: View mode persistence
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\Dashboard\Dashboard.tsx)
+⎿  Added 8 lines, removed 1 line
+130    const reorderRepos = useRepoStore((s) => s.reorderRepos);
+131    const { searchQuery, activeFilter, setActivePanel, setSelectedRepoPath } = useUIStore();
+132    const [showClone, setShowClone] = useState(false);
+133 -  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+133 +  const [viewMode, setViewModeState] = useState<"grid" | "list">(() => {
+134 +    const saved = localStorage.getItem("pushvault-view-mode");
+135 +    return saved === "list" ? "list" : "grid";
+136 +  });
+137 +  const setViewMode = (mode: "grid" | "list") => {
+138 +    setViewModeState(mode);
+139 +    localStorage.setItem("pushvault-view-mode", mode);
+140 +  };
+141
+142    // Drag-and-drop state
+143    const draggedPath = useRef<string | null>(null);
+
+● Now let me verify the build compiles.
+
+● Bash(cd "E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2" && npx tsc --noEmit 2>&1 | head -30)
+⎿  Shell cwd was reset to C:\Users\matth
+
+● Bash(cd "E:/Create/Build/PortfolioShare/2026-03/2026-03-12_PushVault2" && npx tsc --noEmit 2>&1 | head -30)
+⎿  Shell cwd was reset to C:\Users\matth
+
+● Bash(pushd "E:/Create/Build/PortfolioShare/2026-03/2026-03-12_PushVault2" && npx tsc --noEmit 2>&1 | head -30)
+⎿  /e/Create/Build/PortfolioShare/2026-03/2026-03-12_PushVault2 ~
+⎿  Shell cwd was reset to C:\Users\matth
+
+● Bash(cd /e/Create/Build/PortfolioShare/2026-03/2026-03-12_PushVault2 && npx tsc --noEmit 2>&1 | head -30)
+⎿  Shell cwd was reset to C:\Users\matth
+
+● Bash(E: && cd "E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2" && npx tsc --noEmit 2>&1 | head -30)
+⎿  Error: Exit code 127
+/usr/bin/bash: line 1: E:: command not found
+
+● Bash(npx --prefix "E:/Create/Build/PortfolioShare/2026-03/2026-03-12_PushVault2" tsc --noEmit --project
+"E:/Create/Build/PortfolioShare/2026-03/2026-03-12_PushVault2…)
+⎿  (No output)
+
+● TypeScript compiles clean. Now let me check Rust too.
+
+● Bash(cd "E:/Create/Build/PortfolioShare/2026-03/2026-03-12_PushVault2/src-tauri" && cargo check 2>&1 | tail -5)
+⎿      Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.42s
+⎿  Shell cwd was reset to C:\Users\matth
+
+● Both pass. Now let me build the production binary.
+
+● Bash(cd "E:/Create/Build/PortfolioShare/2026-03/2026-03-12_PushVault2" && npx tauri build 2>&1 | tail -20)
+⎿  
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+… +18 lines (ctrl+o to expand)
+⎿  Shell cwd was reset to C:\Users\matth
+⎿  (timeout 10m)
+
+● Build successful. Production .exe, .msi, and NSIS installer all generated.
+
+---
+
+ITERATION 1 COMPLETE
+
+Fixed:
+
+1. Theme system: Light theme CSS variables added, data-theme attribute applied to DOM, theme persisted in
+localStorage, main structural components (Sidebar, Header, BottomBar, App root) now use CSS variables
+2. View mode persistence: Grid/list preference saved to localStorage
+
+---
+
+ITERATION 2 — ANALYSE
+
+Let me scan for more UX/UI issues and code quality problems.
+
+● Explore(Explore codebase for UX bugs)
+⎿  Done (32 tool uses · 97.4k tokens · 1m 2s)
+(ctrl+o to expand)
+
+● ITERATION 2 — DIAGNOSTIC
+
+Priority issues found:
+
+1. CRITICAL: Hardcoded dark colors in all overlay panels, modals, toasts — light theme will be unusable
+2. CRITICAL: Sidebar nav item colors (#b3b3b3, #ffffff) hardcoded — invisible on light bg
+3. MEDIUM: Native prompt() still used in 3 places (BranchManager, CommitHistory)
+4. MEDIUM: FilterPills logic inflates "Needs Push" count with uncommitted changes
+
+ITERATION 2 — CODE
+
+Fixing #1: Convert overlay panel and modal backgrounds to CSS variables. This is the biggest blocker for usable light
+theme.
+
+● Read 3 files (ctrl+o to expand)
+
+● Let me fix the critical components. I'll batch the changes:
+
+ConfirmModal — convert hardcoded colors:
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\ConfirmModal\ConfirmModal.tsx)
+⎿  Added 2 lines, removed 2 lines
+55        <div
+56          style={{
+57            width: "420px",
+58 -          background: "#1a1a1a",
+59 -          border: `1px solid ${isDanger ? "rgba(229,83,75,0.35)" : "rgba(255,255,255,0.1)"}`,
+58 +          background: "var(--color-bg-elevated)",
+59 +          border: `1px solid ${isDanger ? "rgba(229,83,75,0.35)" : "var(--color-border)"}`,
+60            borderRadius: "14px",
+61            padding: "28px",
+62            boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\ConfirmModal\ConfirmModal.tsx)
+⎿  Added 1 line, removed 1 line
+103                margin: 0,
+104                fontSize: "16px",
+105                fontWeight: 700,
+106 -              color: "#fff",
+106 +              color: "var(--color-text-primary)",
+107                lineHeight: 1.3,
+108              }}>
+109                {options.title}
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\ConfirmModal\ConfirmModal.tsx)
+⎿  Added 1 line, removed 1 line
+115          <p style={{
+116            margin: 0,
+117            fontSize: "13px",
+118 -          color: "#b3b3b3",
+118 +          color: "var(--color-text-secondary)",
+119            lineHeight: 1.6,
+120          }}>
+121            {options.description}
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\ConfirmModal\ConfirmModal.tsx)
+⎿  Added 1 line, removed 1 line
+146                  background: "rgba(255,255,255,0.05)",
+147                  border: `1px solid ${phrase === options.confirmPhrase ? "rgba(229,83,75,0.5)" : "rgba(            255,255,255,0.1)"}`,
+148                  borderRadius: "8px",
+149 -                color: "#fff",
+149 +                color: "var(--color-text-primary)",
+150                  fontSize: "13px",
+151                  fontFamily: "monospace",
+152                  outline: "none",
+
+● Toast — convert hardcoded background:
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\Toast\ToastContainer.tsx)
+⎿  Added 1 line, removed 1 line
+72      <div
+73        style={{
+74          position: "relative",
+75 -        background: "#282828",
+75 +        background: "var(--color-bg-elevated)",
+76          border: `1px solid ${colors.border}33`,
+77          borderLeft: `3px solid ${colors.border}`,
+78          borderRadius: "10px",
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\Toast\ToastContainer.tsx)
+⎿  Added 1 line, removed 1 line
+97            <p
+98              style={{
+99                fontSize: "13px",
+100 -              color: "#fff",
+100 +              color: "var(--color-text-primary)",
+101                lineHeight: 1.45,
+102                wordBreak: "break-word",
+103              }}
+
+● FilterPills — fix the inflated "Needs Push" count logic. The condition (s.state === "SYNCED" && (s.staged > 0 ||
+s.modified > 0)) is wrong because staged/modified files don't mean "needs push" — they need to be committed first:
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\FilterPills\FilterPills.tsx)
+⎿  Added 1 line, removed 2 lines
+31        needs_push: statusValues.filter(
+32          (s) =>
+33            s.state === "NEEDS_PUSH" ||
+34 -          s.state === "DIVERGED" ||
+35 -          (s.state === "SYNCED" && (s.staged > 0 || s.modified > 0))
+34 +          s.state === "DIVERGED"
+35        ).length,
+36        needs_pull: statusValues.filter(
+37          (s) => s.state === "NEEDS_PULL" || s.state === "DIVERGED"
+
+● Now convert FilterPills border/bg colors for light theme:
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\FilterPills\FilterPills.tsx)
+⎿  Error editing file
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\FilterPills\FilterPills.tsx)
+⎿  Added 5 lines, removed 5 lines
+75                padding: "5px 14px",
+76                borderRadius: "20px",
+77                border: isActive
+78 -                ? "1px solid #1DB954"
+79 -                : "1px solid rgba(255,255,255,0.12)",
+78 +                ? "1px solid var(--color-accent)"
+79 +                : "1px solid var(--color-border)",
+80                background: isActive
+81 -                ? "#1DB954"
+82 -                : "rgba(255,255,255,0.06)",
+83 -              color: isActive ? "#000" : "#b3b3b3",
+81 +                ? "var(--color-accent)"
+82 +                : "var(--color-bg-elevated)",
+83 +              color: isActive ? "#000" : "var(--color-text-secondary)",
+84                fontSize: "12px",
+85                fontWeight: isActive ? 700 : 500,
+86                cursor: "pointer",
+
+● Now fix Sidebar nav items — the hardcoded white/gray text is invisible on light backgrounds:
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\Sidebar\Sidebar.tsx)
+⎿  Added 1 line, removed 1 line
+66    const isActive = tab === activeTab;
+67    const [hovered, setHovered] = useState(false);
+68
+69 -  const iconColor = isActive ? "#ffffff" : hovered ? "#ffffff" : "#b3b3b3";
+69 +  const iconColor = isActive ? "var(--color-text-primary)" : hovered ? "var(--color-text-primary)" : "v
++ar(--color-text-secondary)";
+70
+71    return (
+72      <button
+
+● Now let me also convert the major overlay panels (StagingArea, BranchManager, StashManager etc.) — these are the most
+visible. Let me batch read the key ones.
+
+● Read 2 files (ctrl+o to expand)
+
+● Let me find all the overlay panel backgrounds — they typically use "#282828" or "#1a1a1a":
+
+● Searched for 1 pattern (ctrl+o to expand)
+
+● There are ~30+ hardcoded backgrounds. The most efficient approach is to do a mass replacement of the recurring
+patterns. Let me also check for hardcoded color: "#fff":
+
+● Searched for 1 pattern (ctrl+o to expand)
+
+● There are ~30+ files with hardcoded dark backgrounds. Let me do a bulk replacement for the three most common
+background patterns — these are unambiguous mechanical substitutions:
+
+● Searched for 3 patterns (ctrl+o to expand)
+
+● Now replace the hardcoded #fff text colors — these are exclusively used for primary text:
+
+● Searched for 1 pattern (ctrl+o to expand)
+
+● And #b3b3b3 for secondary text:
+
+● Searched for 1 pattern (ctrl+o to expand)
+
+● And #6a6a6a for muted text, #535353 for disabled text:
+
+● Searched for 1 pattern (ctrl+o to expand)
+
+● Also fix the common border patterns:
+
+● Searched for 1 pattern (ctrl+o to expand)
+
+● Now verify TypeScript still compiles:
+
+● Bash(npx --prefix "E:/Create/Build/PortfolioShare/2026-03/2026-03-12_PushVault2" tsc --noEmit --project
+"E:/Create/Build/PortfolioShare/2026-03/2026-03-12_PushVault2…)
+⎿  (No output)
+
+● Clean compile. Let me also spot-check that the DiffViewer canvas drawing wasn't broken (it uses ctx.fillStyle which
+isn't CSS):
+
+● Searched for 1 pattern (ctrl+o to expand)
+
+● Good — the ctx.fillStyle values in the canvas drawing code use hex colors directly (not inline style objects), so the
+sed replacements didn't touch them. Canvas doesn't support CSS variables directly, so this is correct.
+
+Now rebuild the production binary:
+
+● Bash(cd "E:/Create/Build/PortfolioShare/2026-03/2026-03-12_PushVault2" && npx tauri build 2>&1 | tail -15)
+⎿  ✓ built in 759ms
+Compiling pushvault v4.0.0 (E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src-tauri)
+Finished `release` profile [optimized] target(s) in 4m 28s
+… +18 lines (ctrl+o to expand)
+⎿  Shell cwd was reset to C:\Users\matth
+⎿  (timeout 10m)
+
+● Build successful.
+
+---
+
+ITERATION 2 COMPLETE
+
+Fixed:
+
+1. Theme-aware backgrounds: Converted ~30 hardcoded #282828/#1a1a1a/#121212 backgrounds across all components to CSS
+variables
+2. Theme-aware text: Converted ~76 hardcoded #fff text colors to var(--color-text-primary), #b3b3b3 to
+var(--color-text-secondary), #6a6a6a to var(--color-text-muted), #535353 to var(--color-text-disabled)
+3. Theme-aware borders: Converted hardcoded rgba(255,255,255,0.06/0.08/0.1) borders to CSS variables
+4. FilterPills logic bug: Removed incorrect inflation of "Needs Push" count (staged/modified files don't need push —
+they need commit first)
+5. Sidebar nav text: Converted hardcoded white/gray to CSS variables
+
+---
+
+ITERATION 3 — ANALYSE
+
+● Explore(Find remaining UX issues)
+⎿  Done (22 tool uses · 97.5k tokens · 44s)
+(ctrl+o to expand)
+
+● ITERATION 3 — DIAGNOSTIC
+
+Remaining issues by priority:
+
+1. CRITICAL: 3 native prompt() calls (BranchManager, CommitHistory x2) — blocks UX consistency
+2. HIGH: ~40 hardcoded dark backgrounds (#1e1e1e, #3d3d3d, #181818) not yet converted
+3. MEDIUM: Hover handler mutations with hardcoded rgba colors (these work OK in dark mode, partially in light)
+
+ITERATION 3 — CODE
+
+Fixing #1 first: Replace the 3 native prompt() calls with a custom prompt modal. The app already has a confirmStore
+pattern — I'll extend it to support text input prompts.
+
+● Read 1 file (ctrl+o to expand)
+
+● I'll create a promptStore following the same pattern, and a PromptModal component.
+
+● Write(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\store\promptStore.ts)
+⎿  Wrote 40 lines to E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\store\promptStore.ts
+1 import { create } from "zustand";
+2
+3 export interface PromptOptions {
+4   title: string;
+5   description?: string;
+6   placeholder?: string;
+7   defaultValue?: string;
+8   confirmLabel?: string;
+9   cancelLabel?: string;
+10 }
+… +30 lines (ctrl+o to expand)
+
+● Write(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\PromptModal\PromptModal.tsx)
+⎿  Wrote 144 lines to
+E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\PromptModal\PromptModal.tsx
+1 import React, { useEffect, useRef, useState } from "react";
+2 import { usePromptStore } from "../../store/promptStore";
+3
+4 export function PromptModal() {
+5   const { pending, respond } = usePromptStore();
+6   const [value, setValue] = useState("");
+7   const inputRef = useRef<HTMLInputElement>(null);
+8
+9   useEffect(() => {
+10     if (pending) {
+… +134 lines (ctrl+o to expand)
+
+● Now add the PromptModal to App.tsx:
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\App.tsx)
+⎿  Added 1 line
+22  import { SubmoduleManager } from "./components/SubmoduleManager/SubmoduleManager";
+23  import { CommandPalette } from "./components/CommandPalette/CommandPalette";
+24  import { ConfirmModal } from "./components/ConfirmModal/ConfirmModal";
+25 +import { PromptModal } from "./components/PromptModal/PromptModal";
+26  import { LfsManager } from "./components/LfsManager/LfsManager";
+27  import { BisectPanel } from "./components/BisectPanel/BisectPanel";
+28  import { RebasePanel } from "./components/RebasePanel/RebasePanel";
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\App.tsx)
+⎿  Added 1 line
+364
+365        {/* Destructive operation confirmation modal */}
+366        <ConfirmModal />
+367 +      <PromptModal />
+368      </div>
+369    );
+370  }
+
+● Now replace the 3 prompt() calls. First, BranchManager:
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\BranchManager\BranchManager.tsx)
+⎿  Added 1 line
+3  import type { BranchInfo } from "../../types";
+4  import { useToastStore } from "../../store/toastStore";
+5  import { useConfirmStore } from "../../store/confirmStore";
+6 +import { usePromptStore } from "../../store/promptStore";
+7
+8  interface Props {
+9    repoPath: string;
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\BranchManager\BranchManager.tsx)
+⎿  Added 7 lines, removed 1 line
+108    };
+109
+110    const handleRename = async (name: string) => {
+111 -    const newName = prompt(`Rename branch '${name}' to:`, name);
+111 +    const newName = await usePromptStore.getState().request({
+112 +      title: "Rename branch",
+113 +      description: `Enter a new name for branch '${name}':`,
+114 +      defaultValue: name,
+115 +      placeholder: "new-branch-name",
+116 +      confirmLabel: "Rename",
+117 +    });
+118      if (!newName?.trim() || newName.trim() === name) return;
+119      try {
+120        await ipc.renameBranch(repoPath, name, newName.trim());
+
+● Now CommitHistory — the two prompt() calls:
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\History\CommitHistory.tsx)
+⎿  Added 1 line
+4  import { useToastStore } from "../../store/toastStore";
+5  import { useActivityStore } from "../../store/activityStore";
+6  import { useConfirmStore } from "../../store/confirmStore";
+7 +import { usePromptStore } from "../../store/promptStore";
+8  import { DiffViewer } from "../Diff/DiffViewer";
+9  import type { CommitInfo, DiffResult } from "../../types";
+10
+
+● Update(E:\Create\Build\PortfolioShare\2026-03\2026-03-12_PushVault2\src\components\History\CommitHistory.tsx)
+⎿  Added 6 lines, removed 1 line
+150    };
+151
+152    const handleCreateBranch = async () => {
+153 -    const name = prompt(`Branch name (from ${commit.short_hash}):`);
+153 +    const name = await usePromptStore.getState().request({
+154 +      title: "Create branch",
+155 +      description: `Create a new branch from commit ${commit.short_hash}`,
+156 +      placeholder: "feature/my-branch",
+157 +      confirmLabel: "Create",
+158 +    });
+159      if (!name?.trim()) return;
+160      try {
+161        await ipc.createBranch(repoPath, name.trim(), commit.hash);
+⎿  You've hit your limit · resets 2am (Europe/Paris)
+
+✻ Cooked for 20m 34s
+
+❯ /rate-limit-op
