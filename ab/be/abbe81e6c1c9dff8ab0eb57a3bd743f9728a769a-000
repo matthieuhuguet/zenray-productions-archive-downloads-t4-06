@@ -1,0 +1,14 @@
+# Motion Matching
+
+![image.png](Motion%20Matching/image.png)
+
+[TUTORIAL GUIDE SETUP](Motion%20Matching/TUTORIAL%20GUIDE%20SETUP%201cbd4ee179c381cdb6d7ce2926b6e9bf.md)
+
+[Motion Matching in Unreal Engine | Unreal Engine 5.5 Documentation | Epic Developer Community](https://dev.epicgames.com/documentation/en-us/unreal-engine/motion-matching-in-unreal-engine?application_version=5.5)
+
+[Key words to check](Motion%20Matching/Key%20words%20to%20check%201cbd4ee179c38104ac4acbc2feff365b.csv)
+
+| Situation | Méthode Recommandée | Pourquoi ? |
+| --- | --- | --- |
+| Transition fluide entre marcher, courir, tourner, ralentir | Motion Matching | Idéal pour ajuster continuellement la pose à l’état réel du perso (direction, vitesse) |
+| Action complexe (envol, combo aérien, attaque scriptée) | Animation Sequence, Montage + Contrôle désactivé | Permet de garder le contrôle sur le timing, les effets et le déroulé précis de l’action |
