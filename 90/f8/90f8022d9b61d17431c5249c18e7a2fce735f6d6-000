@@ -1,0 +1,13 @@
+﻿Name
+Rotate Vector donne la direction vers laquelle pointe un vecteur
+Attention ! Bien respecter l’ordre du reverse foot heel → toe → ball → foot
+On fait un proxy avec deux Null pour avoir la data de rotation et ensuite on la récupère directement pour interpoler les deux positions de FK et IK
+"
+Le IK Snap Challenge"
+Expand and Collapse Item Array
+"FK Snapping Solutions in Unreal Engine "
+FK IK Setup Snap Switch Between Them (calculate the rotation to give) pass parameters.
+L_Ball_RV_fkik_att what is att
+Project to new parent
+J’ai pas tout compris mais woula ça marche.
+Les ctrl null doivent être setup en transform initial
