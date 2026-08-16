@@ -1,0 +1,477 @@
+# Vex learning guide
+
+**Vex learning guide**
+
+# Apprendre le VEX par la Pratique — Le Système d'Herbe Procédurale
+
+### De "je copie-colle du code" à "je comprends ce que j'écris et je sais l'expliquer"
+
+---
+
+## POURQUOI CE GUIDE
+
+Tu as un système d'herbe qui marche dans Houdini. Mais si tu ne comprends pas chaque ligne, tu ne pourras ni le modifier, ni le debugger, ni l'expliquer en entretien. Ce guide reprend chaque bloc de VEX du système d'herbe et t'explique **pourquoi** chaque ligne existe, pas juste **quoi** elle fait.
+
+À la fin, tu auras deux choses :
+
+1. Les réflexes VEX pour écrire tes propres systèmes
+2. Le vocabulaire technique pour pitcher ton travail à un recruteur
+
+---
+
+# PARTIE 1 — LES FONDAMENTAUX VEX
+
+## 1.1 — Comment Houdini exécute ton VEX
+
+Quand tu mets un Attribute Wrangle en "Run Over: Points", Houdini prend ton code et l'exécute **une fois par point**. Si tu as 50 000 points, ton code tourne 50 000 fois. À chaque exécution, `@P` pointe vers le point en cours, `@ptnum` te donne son numéro, et tous les `@attributs` concernent ce point-là.
+
+C'est pour ça que tu n'écris jamais de boucle pour parcourir les points — Houdini le fait pour toi. Tu écris le code pour **un seul point**, et ça s'applique à tous.
+
+```
+Analogie : c'est comme une formule dans Excel.
+Tu écris la formule une fois dans une cellule, et tu la "tires" sur 50 000 lignes.
+Chaque ligne calcule avec ses propres valeurs.
+```
+
+**Comment expliquer ça à un recruteur :** "Le VEX est un langage de shading qui s'exécute en parallèle sur chaque élément géométrique. C'est conceptuellement proche du modèle SIMD — un même programme, des données différentes par thread."
+
+## 1.2 — Les types de données
+
+Il y a 5 types que tu utilises tout le temps. Pas plus.
+
+```
+int count = 5;              // Nombre entier
+float height = 0.35;        // Nombre à virgule
+vector pos = {1, 2, 3};     // 3 floats (x, y, z) — positions, couleurs, directions
+vector2 uv = {0.5, 0.8};    // 2 floats — coordonnées UV (ATTENTION : noise() ne l'accepte pas)
+string name = "grass";       // Texte — rarement utilisé en VEX géométrique
+```
+
+**Le piège que tu as rencontré :** `noise()` accepte `vector` et `vector4` mais PAS `vector2`. Quand tu veux du noise 2D, tu passes un `vector` avec le Y à 0 :
+
+```
+// ERREUR — "Ambiguous call to function noise()"
+vector2 pos2d = set(x, z);
+float n = noise(pos2d);
+
+// CORRECT — vector avec Y = 0
+vector pos3d = set(x, 0, z);
+float n = noise(pos3d);
+```
+
+**Réflexe à retenir :** En cas de doute sur un type, utilise `vector`. C'est le type le plus universel en VEX.
+
+## 1.3 — Les attributs (@)
+
+Le `@` est le cœur du VEX. C'est comme ça que tu lis et écris les données sur la géométrie.
+
+```
+// LIRE un attribut existant
+float h = f@height;      // f@ = cet attribut est un float
+vector c = v@Cd;          // v@ = cet attribut est un vector
+int id = i@clump_id;      // i@ = cet attribut est un int
+
+// ÉCRIRE un attribut (le créer s'il n'existe pas)
+f@height = 0.5;           // Crée ou modifie l'attribut "height" sur ce point
+v@Cd = {1, 0, 0};         // Colore ce point en rouge
+i@grass_type = 2;          // Assigne le type 2
+
+// ATTRIBUTS BUILT-IN (toujours disponibles)
+@P          // vector — position du point (le plus important)
+@P.x        // float — juste la composante X de la position
+@P.y        // float — la composante Y (hauteur)
+@N          // vector — la normale
+@ptnum      // int — le numéro du point (0, 1, 2, 3...)
+@numpt      // int — le nombre total de points
+@Time       // float — le temps courant en secondes
+@Frame      // float — le numéro de frame courant
+```
+
+**Le truc important :** Le préfixe (`f@`, `v@`, `i@`) n'est obligatoire que la **première fois** que tu utilises un attribut dans un Wrangle. Après, Houdini connaît le type. Mais mets-le toujours — c'est plus lisible et ça évite les bugs.
+
+**Comment expliquer ça à un recruteur :** "Les attributs VEX sont des données par-élément stockées sur la géométrie. C'est l'équivalent des vertex attributes en GLSL/HLSL, sauf que le pipeline Houdini permet de les lire et écrire à n'importe quelle étape du graph."
+
+## 1.4 — Les fonctions channel (ch)
+
+Les `ch()` créent des sliders sur le node. C'est ce qui rend ton outil interactif.
+
+```
+float h = chf("height");       // Crée un slider float nommé "height"
+int n = chi("segments");        // Crée un slider integer
+vector d = chv("direction");    // Crée 3 sliders (x, y, z)
+string s = chs("texture");     // Crée un champ texte
+```
+
+**Workflow :**
+
+1. Tu écris `chf("mon_param")` dans ton VEX
+2. Tu cliques le bouton engrenage à droite du champ code → "Create Spare Parameters"
+3. Houdini crée automatiquement les sliders sur le node
+4. Tu ajustes les valeurs en temps réel dans l'interface
+
+**Comment expliquer ça à un recruteur :** "Chaque paramètre exposé via channel est un point de contrôle artistique. L'artiste peut modifier le comportement du système sans toucher au code. C'est la base de la création de HDAs (Houdini Digital Assets) réutilisables."
+
+---
+
+# PARTIE 2 — DÉCONSTRUIRE LE SYSTÈME D'HERBE
+
+## 2.1 — Le Wrangle "base_attributes"
+
+Ce wrangle assigne à chaque point scattéré les propriétés de son futur brin d'herbe.
+
+### Ligne par ligne :
+
+```
+float height_noise = noise(@P * 0.5) * 2 - 1;
+```
+
+**Ce que ça fait :** Génère une valeur de bruit entre -1 et 1 basée sur la position du point.
+
+**Pourquoi `@P * 0.5` :** Le `0.5` contrôle l'échelle du bruit. Plus le nombre est petit, plus le bruit est "large" (les variations sont étalées dans l'espace). Plus il est grand, plus le bruit est "fin" (variations rapprochées). 0.5 signifie "une variation tous les 2 mètres environ".
+
+**Pourquoi `* 2 - 1` :** `noise()` retourne une valeur entre 0 et 1 par défaut. `* 2 - 1` la remappe entre -1 et +1. C'est un pattern que tu verras partout.
+
+```
+f@height = fit(height_noise, -1, 1, height_min, height_max);
+```
+
+**Ce que ça fait :** `fit()` remappe une valeur d'un range à un autre. Ici : -1→1 devient height_min→height_max.
+
+**Pourquoi `fit()` et pas un simple multiply :** Parce que ça te donne un contrôle exact sur les bornes. Tu sais que la hauteur sera toujours entre height_min et height_max, jamais en dehors.
+
+**Le pattern `fit()` :** Tu vas l'utiliser tout le temps en VEX. Retiens-le comme ça :
+
+```
+fit(valeur, ancien_min, ancien_max, nouveau_min, nouveau_max)
+```
+
+C'est l'équivalent de `lerp` + `inverse lerp` en un seul appel.
+
+```
+float angle = random(@ptnum * 12.345) * 6.2831;
+v@facing = set(cos(angle), 0, sin(angle));
+```
+
+**Ce que ça fait :** Crée une direction 2D aléatoire pour chaque brin (dans quelle direction il penche).
+
+**Pourquoi `random(@ptnum * 12.345)` :** `random()` est un hash — pour le même input, il retourne toujours le même output. Le `* 12.345` est un "salt" arbitraire : si tu utilises juste `random(@ptnum)` partout, tous tes attributs aléatoires seraient corrélés (un brin haut serait aussi large, aussi penché, etc.). En multipliant par un nombre différent à chaque fois, tu décorrèles les aléas.
+
+**Pourquoi `6.2831` :** C'est 2π (un tour complet en radians). `random()` donne 0-1, donc `* 2π` donne un angle aléatoire sur 360°. Ensuite `cos` et `sin` de cet angle donnent un vecteur direction unitaire.
+
+**Comment expliquer ça à un recruteur :** "J'utilise un hash déterministe plutôt qu'un générateur aléatoire parce que le résultat doit être stable frame à frame — le même brin doit avoir les mêmes propriétés à chaque frame, sinon l'animation scintille."
+
+## 2.2 — Le Wrangle "clumping"
+
+C'est le bloc le plus sophistiqué du système. Il implémente un **diagramme de Voronoi procédural**.
+
+### Le concept d'abord :
+
+Imagine une grille invisible superposée sur ton terrain. À chaque intersection de cette grille, il y a un "centre de touffe", légèrement décalé aléatoirement. Chaque brin d'herbe regarde quel centre est le plus proche et dit "j'appartiens à cette touffe". Les brins d'une même touffe partagent des comportements (hauteur, direction, couleur).
+
+### Ligne par ligne :
+
+```
+vector2 pos = set(@P.x, @P.z) / clump_scale;
+```
+
+**Ce que ça fait :** Projette la position 3D du point en 2D (vue du dessus) et la normalise par la taille des touffes. Si `clump_scale = 1.5`, un point à X=3m se retrouve à pos.x=2 dans l'espace normalisé.
+
+**Pourquoi diviser par clump_scale :** Ça permet de travailler dans un espace où chaque cellule de la grille fait 1×1. La boucle `for` cherche dans les 9 cellules voisines (-1 à +1 en x et y), ce qui couvre toujours le bon voisinage quelle que soit la taille réelle des touffes.
+
+```
+for (int x = -1; x <= 1; x++) {
+    for (int y = -1; y <= 1; y++) {
+        vector2 cell = floor(pos) + set(x, y);
+```
+
+**Ce que ça fait :** Double boucle qui visite les 9 cellules de grille autour du point (3×3). `floor(pos)` donne la cellule dans laquelle le point se trouve, et les offsets (-1,-1) à (+1,+1) donnent les 8 voisines.
+
+**Pourquoi 9 cellules et pas juste la cellule courante :** Parce que les centres sont jittés — le centre le plus proche peut être dans une cellule voisine, pas forcément dans la cellule du point. Si tu ne regardais que la cellule courante, tu aurais des artefacts aux frontières.
+
+```
+float jx = random(cell.x * 127.1 + cell.y * 311.7) * 0.8;
+```
+
+**Ce que ça fait :** Hash déterministe de la cellule pour jitter le centre. Les nombres `127.1` et `311.7` sont des "magic numbers" — des constantes arbitraires choisies pour décorréler les axes X et Y du jitter.
+
+**Pourquoi `* 0.8` et pas `* 1.0` :** Le jitter est limité à 80% de la cellule. À 100%, un centre pourrait se retrouver exactement sur le bord, ce qui créerait des touffes très fines et des artefacts visuels. À 80%, les centres restent assez centrés pour que le résultat soit propre.
+
+**Comment expliquer ça à un recruteur :** "Le clumping utilise un diagramme de Voronoi bruité évalué analytiquement — pas de structure de données, juste un hash spatial. C'est O(1) par point : chaque brin calcule sa touffe indépendamment en visitant un voisinage fixe de 3×3 cellules. C'est parallélisable à 100%, ce qui le rend adapté à un compute shader."
+
+## 2.3 — Le Wrangle "build_blades"
+
+Ce wrangle est différent des autres : au lieu de modifier des points existants, il **crée de la nouvelle géométrie**. Chaque point d'entrée est remplacé par une courbe de Bézier (une polyline de 7 à 15 points).
+
+### Les fonctions de création de géométrie :
+
+```
+int prim = addprim(0, "polyline");    // Crée une nouvelle primitive (courbe)
+int pt = addpoint(0, pos);            // Crée un nouveau point à la position pos
+addvertex(0, prim, pt);               // Attache le point à la courbe
+removepoint(0, @ptnum);               // Supprime le point original
+```
+
+Le `0` dans ces fonctions signifie "input/output 0" (le flux de géométrie principal).
+
+**L'ordre est important :**
+
+1. D'abord tu crées la primitive (la courbe vide)
+2. Puis tu crées les points un par un
+3. Tu attaches chaque point à la courbe avec addvertex
+4. Les vertices sont dans l'ordre d'ajout (du premier au dernier = de la base à la pointe)
+5. À la fin, tu supprimes le point d'origine
+
+### La courbe de Bézier cubique :
+
+```
+float u = 1.0 - t;
+vector pos = u*u*u * P0
+           + 3.0*u*u*t * P1
+           + 3.0*u*t*t * P2
+           + t*t*t * P3;
+```
+
+C'est la formule mathématique standard d'une Bézier cubique. `t` va de 0 à 1 :
+
+- À t=0 : la position est P0 (base du brin)
+- À t=1 : la position est P3 (pointe du brin)
+- Entre les deux : la courbe est "attirée" par P1 et P2
+
+**Pourquoi 4 points de contrôle et pas 3 ou 5 :** 4 points (cubique) est le sweet spot. Avec 3 (quadratique), tu n'as pas assez de contrôle pour faire des formes en S. Avec 5, le surcoût n'apporte pas de bénéfice visible pour un brin d'herbe. La cubique te donne exactement le bon rapport contrôle/coût.
+
+```
+float t2 = pow(t, 1.3);
+```
+
+**Ce que ça fait :** Redistribue les vertices le long de la courbe. Avec `pow(t, 1.3)`, les vertices sont légèrement plus concentrés vers la base (t=0) et plus espacés vers la pointe (t=1).
+
+**Pourquoi :** La base du brin a plus de courbure (là où il sort du sol et commence à s'arquer). En mettant plus de vertices là, la courbe est plus lisse dans la zone qui compte. La pointe bouge plus mais est petite à l'écran — moins de vertices suffisent.
+
+```
+setpointattrib(0, "blade_t", pt, t);
+```
+
+**Ce que ça fait :** Stocke la position le long du brin (0=base, 1=pointe) sur chaque vertex. C'est crucial parce que le Wrangle du vent et celui de la couleur ont besoin de savoir "où suis-je sur le brin ?" pour appliquer leurs effets progressivement.
+
+**Comment expliquer ça à un recruteur :** "Chaque brin est une courbe de Bézier cubique générée procéduralement. Les 4 points de contrôle sont dérivés des attributs du brin — hauteur, inclinaison, courbure — ce qui permet de générer une variété infinie de formes à partir de quelques paramètres. La redistribution des vertices concentre la résolution géométrique là où la courbure est la plus forte."
+
+## 2.4 — Le Wrangle "wind_animation"
+
+### Le Perlin noise scrollé :
+
+```
+vector noise_pos = set(
+    @P.x * wind_freq + wind_dir.x * time * wind_speed,
+    0,
+    @P.z * wind_freq + wind_dir.z * time * wind_speed
+);
+float wind_value = noise(noise_pos);
+```
+
+**Décomposons :**
+
+`@P.x * wind_freq` — C'est la coordonnée spatiale. `wind_freq` contrôle la "taille" des vagues de vent. Petit = grandes vagues lentes, grand = petites vagues agitées.
+
+`+ wind_dir.x * time * wind_speed` — C'est le scroll temporel. À chaque frame, `time` augmente, donc la position de sampling se décale dans la direction du vent. C'est exactement comme si le champ de bruit "glissait" au-dessus du terrain dans la direction du vent.
+
+**Pourquoi ça crée des vagues :** Le Perlin noise est continu — les valeurs proches dans l'espace ont des valeurs proches. Quand le point de sampling scroll, chaque brin "traverse" le champ de bruit à la même vitesse mais depuis des positions différentes. Le résultat est une onde qui se propage dans la direction du vent, exactement comme une rafale traversant un champ.
+
+### Le bobbing :
+
+```
+float phase = f@blade_hash * 6.2831 + t * 1.5;
+float bob = sin(time * bob_speed + phase) * bob_strength * influence;
+```
+
+**Pourquoi `f@blade_hash * 6.2831` :** Le hash (unique par brin) est multiplié par 2π pour donner un décalage de phase aléatoire sur un cycle complet. Sans ça, tous les brins oscilleraient en synchrone — un mouvement robotique.
+
+**Pourquoi `+ t * 1.5` :** Le paramètre `t` (position le long du brin) ajoute un décalage de phase supplémentaire. Ça signifie que la base et la pointe du même brin ne sont pas exactement en phase — la pointe "suit" la base avec un léger retard, ce qui crée un mouvement de balancement naturel (comme une corde qui ondule).
+
+**Pourquoi `* influence` (qui est `pow(t, 2.0)`) :** L'amplitude du mouvement est nulle à la base (t=0, le brin est ancré au sol) et maximale à la pointe (t=1). Le `pow(..., 2.0)` rend cette transition non-linéaire — le mouvement augmente lentement au début puis accélère vers la pointe, ce qui est physiquement correct (effet de levier).
+
+**Comment expliquer ça à un recruteur :** "L'animation combine deux niveaux : un champ de vent global basé sur du Perlin noise 2D scrollé dans la direction du vent, qui crée les vagues macroscopiques dans le champ, et un bobbing sinusoïdal par brin avec un déphasage par hash, qui ajoute de la micro-variation. Le résultat est un mouvement organique cohérent sans aucune donnée d'animation stockée — tout est calculé procéduralement à chaque frame."
+
+---
+
+# PARTIE 3 — LES RÉFLEXES VEX À RETENIR
+
+## 3.1 — Les 10 patterns que tu vas réutiliser partout
+
+**Pattern 1 — Remapper une valeur**
+
+```
+float result = fit(valeur, old_min, old_max, new_min, new_max);
+// Exemple : convertir noise (0-1) en hauteur (0.1-0.5)
+f@height = fit(noise(@P), 0, 1, 0.1, 0.5);
+```
+
+**Pattern 2 — Random déterministe décorrélé**
+
+```
+float r1 = random(@ptnum * 12.345);  // Un aléa
+float r2 = random(@ptnum * 67.890);  // Un autre, décorrélé
+float r3 = random(@ptnum * 99.111);  // Encore un autre
+// Les "magic numbers" empêchent que r1, r2, r3 soient identiques
+```
+
+**Pattern 3 — Noise remappé en -1 à +1**
+
+```
+float n = noise(@P * freq) * 2.0 - 1.0;
+```
+
+**Pattern 4 — Influence progressive (base → tip)**
+
+```
+float influence = pow(t, 2.0);  // Nul à t=0, maximal à t=1, courbe douce
+```
+
+**Pattern 5 — Direction aléatoire 2D**
+
+```
+float angle = random(@ptnum * salt) * 6.2831;
+vector dir = set(cos(angle), 0, sin(angle));
+```
+
+**Pattern 6 — Mélanger deux valeurs avec contrôle**
+
+```
+vector result = lerp(valeur_A, valeur_B, facteur);  // facteur 0-1
+// Exemple : mélanger facing original et direction vers le clump
+v@facing = lerp(v@facing, to_center, 0.3);  // 30% vers le centre
+```
+
+**Pattern 7 — Créer de la géométrie**
+
+```
+int prim = addprim(0, "polyline");
+int pt = addpoint(0, position);
+addvertex(0, prim, pt);
+removepoint(0, @ptnum);  // Si tu remplaces le point original
+```
+
+**Pattern 8 — Noise 2D scrollé (animation)**
+
+```
+vector npos = set(
+    @P.x * freq + direction.x * @Time * speed,
+    0,
+    @P.z * freq + direction.z * @Time * speed
+);
+float n = noise(npos);
+```
+
+**Pattern 9 — Oscillation déphasée par élément**
+
+```
+float phase = random_hash * 6.2831;
+float wave = sin(@Time * vitesse + phase);
+```
+
+**Pattern 10 — Transférer un attribut dans un setpointattrib**
+
+```
+// Quand tu crées des points manuellement, les attributs du point original
+// ne sont pas copiés. Tu dois les transférer explicitement :
+setpointattrib(0, "mon_attribut", nouveau_point, valeur);
+```
+
+## 3.2 — Les erreurs classiques et comment les éviter
+
+| Erreur | Cause | Solution |
+| --- | --- | --- |
+| "Ambiguous call to function" | Type d'argument incorrect (`vector2` au lieu de `vector`) | Vérifier la signature de la fonction dans la doc |
+| L'animation scintille | `random()` qui change entre les frames | Utiliser `@ptnum` ou une position stable, jamais `@Frame` dans random |
+| Tous les brins se ressemblent | Même seed pour tous les random | Multiplier `@ptnum` par des constantes différentes |
+| Les brins flottent au-dessus du sol | P0 n'est pas exactement à `@P` | Vérifier que la base de la Bézier utilise la position originale |
+| Le noise est trop uniforme | Fréquence trop basse | Augmenter le multiplicateur de `@P` dans le noise |
+| Le vent ne scroll pas | `@Time` oublié ou mal connecté | Vérifier que la timeline tourne et que `@Time` est dans l'expression |
+| "Read-only expression" | Tu essaies de modifier un attribut dans un Wrangle en mode Detail | Vérifier que Run Over = Points |
+| Les couleurs ne s'affichent pas | Display options | Activer les Point Colors dans le viewport (touche D) |
+
+## 3.3 — Comment debugger en VEX
+
+**Technique 1 — Visualiser via la couleur :**
+
+```
+// Mappe n'importe quel attribut float sur une couleur pour le voir
+v@Cd = set(f@height, f@height, f@height);  // Grayscale par hauteur
+v@Cd = set(f@wind_force, 0, 0);             // Rouge = plus de vent
+```
+
+**Technique 2 — Le Geometry Spreadsheet :**
+Clique sur un point dans le viewport, puis ouvre le Geometry Spreadsheet (en bas de l'écran par défaut). Tu vois toutes les valeurs de tous les attributs de ce point. C'est ton outil de debug principal.
+
+**Technique 3 — Printf :**
+
+```
+if (@ptnum == 0) {
+    printf("height = %f, clump_id = %d\\n", f@height, i@clump_id);
+}
+// Le if évite de printer 50 000 lignes — juste le point 0
+// Le résultat apparaît dans la console Houdini (Alt+Shift+T)
+```
+
+**Technique 4 — Isoler un wrangle :**
+Débranche temporairement un wrangle (ou mets-le en bypass avec le drapeau bleu) pour voir l'état de la géométrie avant et après.
+
+---
+
+# PARTIE 4 — PITCHER TON SYSTÈME À UN RECRUTEUR
+
+## 4.1 — Le pitch en 30 secondes
+
+> "J'ai développé un système d'herbe procédurale dans Houdini inspiré du pipeline de Ghost of Tsushima. Le système génère des dizaines de milliers de brins individuels, chacun modélisé comme une courbe de Bézier cubique, avec un scattering basé sur un Voronoi bruité pour le clumping naturel, et une animation de vent en temps réel via Perlin noise scrollé. Tout est paramétrique et exportable vers UE5 via Houdini Engine."
+> 
+
+## 4.2 — Les questions techniques qu'on pourrait te poser
+
+**"Comment tu gères la performance avec autant de brins ?"**
+
+→ "Le scattering est basé sur une grille avec jitter plutôt qu'un scatter aléatoire pur — ça garantit une distribution uniforme sans sur-échantillonnage. Le clumping est calculé analytiquement en O(1) par point via un hash spatial, sans structure de données. Le LOD supprime 75% des brins au-delà d'un seuil de distance et réduit le nombre de vertices par courbe. Le tout est parallélisable nativement, ce qui le rend adapté à une implémentation GPU via compute shader."
+
+**"Pourquoi Bézier cubique et pas des instances de meshes ?"**
+
+→ "Les courbes de Bézier donnent un contrôle continu sur la forme — je peux animer chaque brin individuellement en déplaçant les points de contrôle, ce qui est impossible avec des grass cards classiques sans créer des artefacts. Les dérivées sont triviales à calculer, donc les normales pour le shading sont gratuites. Et le coût mémoire est minimal : 4 points de contrôle + quelques attributs par brin, contre un mesh complet par instance."
+
+**"Comment le vent fonctionne ?"**
+
+→ "C'est un champ de Perlin noise 2D scrollé dans la direction du vent. Chaque brin sample ce champ à sa position et reçoit une force qui déforme ses points de contrôle Bézier. Par-dessus, chaque brin a un bobbing sinusoïdal avec un déphasage unique par hash, ce qui ajoute de la micro-variation. Le résultat est cohérent spatialement — on voit des vagues traverser le champ — tout en étant unique par brin."
+
+**"C'est quoi le clumping et pourquoi c'est important ?"**
+
+→ "Le clumping organise les brins en touffes via un diagramme de Voronoi procédural. Sans ça, un champ d'herbe ressemble à du gazon tondu — uniformément réparti. Dans la nature, l'herbe pousse en touffes parce que les conditions du sol varient localement. Le clumping influence la hauteur, la direction et la couleur des brins par groupe, ce qui donne un aspect organique. C'est l'élément qui fait la plus grande différence visuelle dans le système."
+
+**"Comment tu l'intègres dans un pipeline UE5 ?"**
+
+→ "Le système est encapsulé dans un HDA exposant les paramètres artistiques. Via Houdini Engine for UE5, l'artiste peut modifier les paramètres directement dans l'éditeur UE5 sans ouvrir Houdini. L'output est soit des instances packées pour du static mesh instancing, soit un export Alembic si on veut bake l'animation. Les matériaux et le shading sont reconstruits côté UE5 en Material Editor."
+
+## 4.3 — Le vocabulaire à maîtriser
+
+| Terme | Ce que ça veut dire | Quand l'utiliser |
+| --- | --- | --- |
+| Procédural | Généré par des règles/algorithmes, pas à la main | "Le placement est procédural" |
+| Paramétrique | Contrôlable par des paramètres exposés | "Le système est paramétrique — l'artiste ajuste sans coder" |
+| Déterministe | Le même input donne toujours le même output | "Le random est déterministe via hash pour la stabilité temporelle" |
+| SIMD / Parallélisable | Le même code tourne sur chaque élément indépendamment | "Le VEX est intrinsèquement parallélisable" |
+| O(1) | Le coût ne dépend pas du nombre total d'éléments | "Le clumping est O(1) par point" |
+| Hash spatial | Fonction qui transforme une position en valeur pseudo-aléatoire | "J'utilise un hash spatial pour le jitter du Voronoi" |
+| HDA (Houdini Digital Asset) | Un outil encapsulé et réutilisable | "Le système est packagé en HDA pour l'intégration UE5" |
+| Perlin noise | Bruit continu et lisse, utile pour les phénomènes naturels | "Le vent est basé sur du Perlin noise scrollé" |
+| Bézier cubique | Courbe définie par 4 points de contrôle | "Chaque brin est une Bézier cubique" |
+| Voronoi | Partition de l'espace en cellules basées sur la proximité | "Le clumping utilise un Voronoi procédural" |
+| Instance / Packed primitive | Copie légère qui référence un mesh partagé | "Les assets sont instancés pour la performance" |
+| LOD (Level of Detail) | Simplification progressive avec la distance | "Le LOD réduit les vertices par brin et la densité" |
+
+## 4.4 — Ton positionnement
+
+Ce que ce projet prouve sur ton profil :
+
+- **Technical Artist** — Tu bridges entre le code (VEX/compute) et la direction artistique (paramètres exposés, résultat visuel)
+- **Pipeline TD** — Tu construis des outils (HDAs) réutilisables et intégrés dans un pipeline cross-DCC (Houdini → UE5)
+- **Connaissance GPU** — Tu comprends les contraintes de parallélisme et de performance qui s'appliquent au runtime
+- **Référence AAA** — Tu sais analyser et reproduire un système shipping d'un studio AAA (Sucker Punch) et l'adapter à ton pipeline
+
+---
+
+*Ce système est basé sur "Procedural Grass in Ghost of Tsushima" (Eric Woley, Sucker Punch Productions, GDC). Implémenté et adapté dans Houdini par Matthieu.*
