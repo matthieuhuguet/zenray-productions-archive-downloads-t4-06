@@ -1,0 +1,151 @@
+# Documentation
+
+# Framework UI Widget FF7 Remake - Pipeline Prototype to UMG
+
+## Architecture du Projet
+
+```mermaid
+flowchart LR
+    subgraph react [React Prototype]
+        Components[Widget Components]
+        Animations[Framer Motion]
+        Config[Animation Config JSON]
+    end
+
+    subgraph export [Export System]
+        Capture[html-to-image]
+        Resolution[Resolution Presets]
+        Batch[Batch Export]
+    end
+
+    subgraph output [Outputs]
+        PNG[PNG Sequences]
+        Docs[Animation Docs]
+        UMG[UMG Parameters]
+    end
+
+    Components --> Animations
+    Animations --> Config
+    Config --> Capture
+    Capture --> Resolution
+    Resolution --> Batch
+    Batch --> PNG
+    Config --> Docs
+    Docs --> UMG
+```
+
+## Structure des Fichiers
+
+```
+A:\Create\Build\DatabaseCode\FF7R_UI_Widgets\
+├── src/
+│   ├── components/
+│   │   ├── widgets/
+│   │   │   ├── HealthBar.tsx          # Barre HP/MP style Cloud
+│   │   │   ├── InteractionPrompt.tsx  # Bouton rond "E Interact"
+│   │   │   └── FloorMarker.tsx        # Chevrons au sol
+│   │   ├── primitives/
+│   │   │   ├── GlowEffect.tsx         # Effet glow réutilisable
+│   │   │   ├── SegmentedCircle.tsx    # Cercle segmenté animé
+│   │   │   └── AngleFrame.tsx         # Cadres angulaires FF7R
+│   │   └── ui/
+│   │       └── ExportPanel.tsx        # Interface d'export
+│   ├── animations/
+│   │   ├── presets.ts                 # Timings/easings documentés
+│   │   └── variants.ts                # Variants Framer Motion
+│   ├── export/
+│   │   ├── captureWidget.ts           # html-to-image wrapper
+│   │   └── exportConfig.ts            # Résolutions prédéfinies
+│   ├── styles/
+│   │   └── ff7r-theme.css             # Variables CSS (couleurs glow, etc.)
+│   └── App.tsx                        # Galerie interactive
+├── exports/                           # PNG générés
+├── docs/
+│   └── animation-specs.md             # Specs pour UMG
+├── package.json
+└── vite.config.ts
+```
+
+## Stack Technique
+
+Outil | Usage |
+
+|——-|——-|
+
+**Vite + React + TypeScript** | Framework de base rapide |
+
+**Framer Motion** | Animations déclaratives |
+
+**html-to-image** | Capture PNG/SVG |
+
+**Tailwind CSS** | Styles utilitaires + CSS custom |
+
+## Widgets Prioritaires (basés sur vos images)
+
+### 1. Barre de Vie (HealthBar)
+
+- Fond avec dégradé diagonal sombre
+- Bordure angulaire gauche (clip-path)
+- Barre de progression avec glow
+- Animations : remplissage smooth, flash on damage
+
+### 2. Bouton d’Interaction (InteractionPrompt)
+
+- Cercle segmenté avec rotation continue
+- Icône centrale (triangle)
+- Texte avec keybind “[E] Interact”
+- Animations : fade-in, pulse, segments rotation
+
+### 3. Marqueur au Sol (FloorMarker)
+
+- Chevrons empilés avec glow cyan
+- Cadre avec coins arrondis
+- Animations : chevrons montants en boucle, pulse glow
+
+## Système d’Export
+
+```tsx
+// Résolutions prédéfinies pour UMG
+const EXPORT_PRESETS = {
+  thumbnail: { width: 128, height: 128 },
+  standard: { width: 256, height: 256 },
+  hd: { width: 512, height: 512 },
+  uhd: { width: 1024, height: 1024 }
+};
+```
+
+- Export PNG avec fond transparent
+- Option séquence d’animation (frames individuelles)
+- Génération automatique de sprite sheets
+
+## Documentation Animation (pour UMG)
+
+Chaque widget génère un fichier de specs :
+
+```json
+{
+  "widget": "InteractionPrompt",
+  "animations": {
+    "fadeIn": {
+      "duration": 0.3,
+      "easing": "easeOut",
+      "properties": ["opacity", "scale"]
+    },
+    "segmentRotation": {
+      "duration": 2.0,
+      "easing": "linear",
+      "loop": true
+    }
+  }
+}
+```
+
+## Étapes d’Implémentation
+
+1. **Setup projet** - Vite + dépendances + structure dossiers
+2. **Thème FF7R** - Variables CSS (couleurs glow, fonts, etc.)
+3. **Primitives** - Composants de base réutilisables (GlowEffect, etc.)
+4. **Premier widget** - InteractionPrompt (cercle segmenté)
+5. **Système export** - html-to-image avec résolutions
+6. **Galerie** - Interface pour visualiser/exporter tous les widgets
+7. **Documentation** - Génération auto des specs animation
