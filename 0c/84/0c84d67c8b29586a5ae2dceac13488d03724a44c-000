@@ -1,0 +1,16 @@
+# Motion Warping
+
+![image.png](Motion%20Warping/image.png)
+
+*Le Motion Warping vous permet de donner à vos personnages une grande flexibilité, en alignant leurs animations sur des points précis dans la scène. Vous créez un Montage, insérez un Notify, nommez une Warp Target, puis dans le Blueprint vous mettez à jour cette cible avant de jouer le Montage. Résultat : le personnage ajuste sa root motion pour coller parfaitement à la situation de jeu, sans créer manuellement des transitions complexes.*
+
+| Étape | Action | Détails | Résultat |
+| --- | --- | --- | --- |
+| 1 | Activer Plugin | *Edit > Plugins > Motion Warping* | Plugin prêt à l’emploi |
+| 2 | Préparer Anim. | Avoir une Animation avec Root Motion actif | Permet la déformation |
+| 3 | Créer Montage | *Clic droit sur Anim > Create AnimMontage* | Montage d’animation créé |
+| 4 | Ajouter Motion Warping Notify | Dans le Montage, Add Notify State… > Motion Warping | Fenêtre d’application du warp |
+| 5 | Configurer le Notify | Définir Root Motion Modifier, Warp Target Name… | Paramètres de déformation fixés |
+| 6 | Ajouter Composant au Personnage | Dans le Character BP, Add Motion Warping Component | Blueprint prêt pour gérer Warp Targets |
+| 7 | Définir Warp Target dans le BP | Utiliser “Add or Update Warp Target” avec le même nom | Cible de position/rotation définie |
+| 8 | Lancer le Montage | Play Montage sur le SkeletalMesh avec le Warp Target défini | Animation se déforme vers la cible |
