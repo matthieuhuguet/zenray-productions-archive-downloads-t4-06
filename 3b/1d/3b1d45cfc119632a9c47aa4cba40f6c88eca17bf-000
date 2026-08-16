@@ -1,0 +1,28 @@
+# Rapport d'incident : Déblocage de l'upload de fichiers vers Notion API
+
+## Objectif
+
+Permettre à l'agent OpenClaw d'uploader des fichiers locaux (images, etc.) directement dans des pages Notion via l'API, sans utiliser de service de stockage intermédiaire.
+
+## Problème Rencontré
+
+Malgré plusieurs tentatives basées sur la documentation web et les guides de développeurs, toutes les requêtes pour initier un upload de fichier échouent avec une erreur HTTP 400 (Bad Request), indiquant un problème dans la formulation de la requête (URL de l'endpoint ou payload).
+
+## Tentatives effectuées
+
+```bash
+curl -X POST 'https://api.notion.com/v1/files' -H 'Authorization: Bearer ...' -H 'Content-Type: application/json' --data '{"name":"test.jpg"}'
+```
+
+Résultat : HTTP 400 - `invalid_request_url`
+
+```bash
+curl -X POST 'https://api.notion.com/v1/uploads' -H 'Authorization: Bearer ...' -H 'Content-Type: application/json' --data '{"name":"test.jpg", "content_length": 12345, "content_type": "image/jpeg"}'
+```
+
+Résultat : HTTP 400 - `invalid_request_url`
+
+## Conclusion & Prochaine Étape
+
+La documentation publique semble manquer de clarté ou être en décalage avec l'implémentation actuelle de l'API. Une recherche plus approfondie par un développeur humain est nécessaire pour trouver la syntaxe exacte ou un exemple de code fonctionnel.
+Action recommandée : Examiner la documentation officielle la plus récente (https://developers.notion.com/reference/file-upload) et tester les requêtes avec un outil comme Postman pour trouver la bonne combinaison.
