@@ -1,0 +1,62 @@
+# TUTORIAL GUIDE SETUP
+
+- **Table Step**
+    
+    
+    | Étape | Action | Détails | Résultat |
+    | --- | --- | --- | --- |
+    | 1 | Activer Pose Search Plugin | *Edit > Plugins > Animation > Pose Search > Enable* | Plugin activé, redémarrez l’éditeur |
+    | 2 | Préparer les animations | Avoir des animations de locomotion avec Root Motion | Données prêtes pour le Motion Matching |
+    | 3 | Créer un Pose Search Schema | *Content Browser > New > Animation > Motion Matching > Pose Search Schema* | Définit les canaux (Trajectory, Pose, etc.) et les os suivis |
+    | 4 | Configurer le Schema | Sélection du Skeleton, ajustement des canaux, des échantillons | Base de configuration du Motion Matching |
+    | 5 | Créer un Pose Search Database | *Content Browser > New > Animation > Motion Matching > Pose Search Database* | Contient toutes les animations pour la recherche de poses |
+    | 6 | Ajouter les animations dans la Database | Glisser-déposer ou (+) Add dans l’asset Database | Le Motion Matching peut désormais sélectionner parmi ces données |
+    | 7 | Intégrer dans l’Anim Blueprint | Ajouter le node *Motion Matching*, connecter à un *Pose History Node* et à *Output Pose* | Le personnage utilisera Motion Matching en runtime |
+    | 8 | Ajuster les paramètres | Poids des canaux, filtrage des notifies, Blend Times | Affiner la réactivité et le réalisme |
+    | 9 | Déboguer et itérer | Utiliser les outils de debug, ajouter plus d’animations, normaliser | Amélioration continue de la qualité de l’animation |
+
+Setup Plugin
+
+Choosers Table
+
+![image.png](TUTORIAL%20GUIDE%20SETUP/image.png)
+
+![image.png](TUTORIAL%20GUIDE%20SETUP/image%201.png)
+
+Tutorial & Docs + Lyra.
+
+[Your First 60 Minutes With Motion Matching | Tutorial](https://dev.epicgames.com/community/learning/tutorials/lwlG/unreal-engine-your-first-60-minutes-with-motion-matching)
+
+[Unreal Engine 5.4 Motion Matching in 13 Minutes | 2024](https://www.youtube.com/watch?v=LJi_vPAuTv4)
+
+[The Full Motion Matching Tutorial  W500 Animations/ Walk, Crouch, Jump, TurnInPlace | UE5.4](https://www.youtube.com/watch?v=j8RgsganqRU)
+
+Pour toutes les animations il faut le root motion et pour l’idle il faut loop
+
+![image.png](TUTORIAL%20GUIDE%20SETUP/image%202.png)
+
+a.CharacterTrajectoryDebug 1 
+
+CLI pour afficher le motion matching.
+
+Très important mettre les Normalization Set Ensemble.
+
+![image.png](TUTORIAL%20GUIDE%20SETUP/image%203.png)
+
+Switching Data Tables on the fly = Choosers
+
+![image.png](TUTORIAL%20GUIDE%20SETUP/image%204.png)
+
+![image.png](TUTORIAL%20GUIDE%20SETUP/image%205.png)
+
+![image.png](TUTORIAL%20GUIDE%20SETUP/image%206.png)
+
+![image.png](TUTORIAL%20GUIDE%20SETUP/image%207.png)
+
+PSS(Schema)_InAir
+
+![image.png](TUTORIAL%20GUIDE%20SETUP/image%208.png)
+
+![image.png](TUTORIAL%20GUIDE%20SETUP/image%209.png)
+
+Populate Jump + Walk etc.
